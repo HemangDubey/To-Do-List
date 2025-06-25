@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Todo Master</title>
+    <meta name="description" content="A powerful, accessible todo application with advanced features">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+</head>
+<body data-theme="system">
+    <div class="app">
+        <header class="app__header">
+            <div class="header__content">
+                <h1 class="header__title">
+                    <span class="header__icon" aria-hidden="true">✓</span>
+                    Todo Master
+                </h1>
+                <div class="header__actions">
+                    <button class="btn btn--icon theme-toggle" 
+                            id="themeToggle" 
+                            aria-label="Toggle theme"
+                            title="Switch theme">
+                        <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="app__main">
+            <!-- Task Input Form -->
+            <section class="task-input" aria-labelledby="task-input-heading">
+                <h2 id="task-input-heading" class="visually-hidden">Add New Task</h2>
+                <form class="task-form" id="taskForm" novalidate>
+                    <div class="form-group form-group--main">
+                        <label for="taskInput" class="visually-hidden">Task description</label>
+                        <input 
+                            type="text" 
+                            id="taskInput" 
+                            class="form-input form-input--main"
+                            placeholder="What needs to be done?"
+                            maxlength="200"
+                            autocomplete="off"
+                            required
+                            aria-describedby="task-input-help"
+                        >
+                        <div id="task-input-help" class="form-help">
+                            Press Enter to add task quickly
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="prioritySelect" class="form-label">Priority</label>
+                        <select id="prioritySelect" class="form-select" aria-label="Task priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn--primary btn--add" id="addTaskBtn">
+                        <span class="btn__icon" aria-hidden="true">+</span>
+                        <span class="btn__text">Add Task</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Task Controls -->
+            <section class="task-controls" aria-labelledby="controls-heading">
+                <h2 id="controls-heading" class="visually-hidden">Task Controls</h2>
+                
+                <div class="controls__row">
+                    <div class="filter-group" role="group" aria-labelledby="filter-heading">
+                        <h3 id="filter-heading" class="filter-group__title">Filter</h3>
+                        <div class="filter-buttons">
+                            <button class="btn btn--filter btn--filter-active" 
+                                    data-filter="all" 
+                                    aria-pressed="true">
+                                All <span class="filter__count" id="countAll">0</span>
+                            </button>
+                            <button class="btn btn--filter" 
+                                    data-filter="pending" 
+                                    aria-pressed="false">
+                                Pending <span class="filter__count" id="countPending">0</span>
+                            </button>
+                            <button class="btn btn--filter" 
+                                    data-filter="completed" 
+                                    aria-pressed="false">
+                                Completed <span class="filter__count" id="countCompleted">0</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="sort-group">
+                        <label for="sortSelect" class="form-label">Sort by</label>
+                        <select id="sortSelect" class="form-select form-select--compact">
+                            <option value="newest">Newest first</option>
+                            <option value="oldest">Oldest first</option>
+                            <option value="priority">Priority</option>
+                            <option value="alphabetical">A-Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bulk-actions" id="bulkActions" hidden>
+                    <button class="btn btn--secondary btn--sm" id="selectAllBtn">
+                        Select All
+                    </button>
+                    <button class="btn btn--success btn--sm" id="markAllDoneBtn">
+                        Mark Done
+                    </button>
+                    <button class="btn btn--danger btn--sm" id="deleteSelectedBtn">
+                        Delete Selected
+                    </button>
+                    <button class="btn btn--ghost btn--sm" id="clearSelectionBtn">
+                        Clear Selection
+                    </button>
+                </div>
+            </section>
+
+            <!-- Task List -->
+            <section class="task-list-section" aria-labelledby="task-list-heading">
+                <h2 id="task-list-heading" class="visually-hidden">Your Tasks</h2>
+                
+                <ul class="task-list" 
+                    id="taskList" 
+                    role="list" 
+                    aria-live="polite" 
+                    aria-label="Task list">
+                </ul>
+                
+                <div class="empty-state" id="emptyState" hidden>
+                    <div class="empty-state__icon" aria-hidden="true">📝</div>
+                    <h3 class="empty-state__title">No tasks yet</h3>
+                    <p class="empty-state__description">
+                        Add your first task above to get started on your productivity journey!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Statistics Panel -->
+            <section class="stats-panel" aria-labelledby="stats-heading">
+                <h2 id="stats-heading" class="stats-panel__title">Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card stat-card--total">
+                        <div class="stat-card__icon" aria-hidden="true">📊</div>
+                        <div class="stat-card__content">
+                            <div class="stat-card__value" id="statTotal">0</div>
+                            <div class="stat-card__label">Total Tasks</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card stat-card--completed">
+                        <div class="stat-card__icon" aria-hidden="true">✅</div>
+                        <div class="stat-card__content">
+                            <div class="stat-card__value" id="statCompleted">0</div>
+                            <div class="stat-card__label">Completed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card stat-card--pending">
+                        <div class="stat-card__icon" aria-hidden="true">⏳</div>
+                        <div class="stat-card__content">
+                            <div class="stat-card__value" id="statPending">0</div>
+                            <div class="stat-card__label">Pending</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card stat-card--productivity">
+                        <div class="stat-card__icon" aria-hidden="true">🎯</div>
+                        <div class="stat-card__content">
+                            <div class="stat-card__value" id="statProductivity">0%</div>
+                            <div class="stat-card__label">Completion Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app__footer">
+            <div class="footer__content">
+                <p class="footer__text">
+                    Made with ❤️ for productivity enthusiasts
+                </p>
+                <div class="footer__actions">
+                    <button class="btn btn--ghost btn--sm" id="exportBtn">
+                        Export Data
+                    </button>
+                    <button class="btn btn--ghost btn--sm" id="importBtn">
+                        Import Data
+                    </button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer" aria-live="assertive" aria-atomic="true"></div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal" hidden>
+        <div class="modal" role="dialog" aria-labelledby="modal-title" aria-describedby="modal-description">
+            <div class="modal__header">
+                <h3 id="modal-title" class="modal__title">Confirm Action</h3>
+            </div>
+            <div class="modal__body">
+                <p id="modal-description" class="modal__description"></p>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--secondary" id="modalCancel">Cancel</button>
+                <button class="btn btn--danger" id="modalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="fileInput" accept=".json" hidden>
+
+    <script src="app.js"></script>
+</body>
+</html>
